@@ -13,11 +13,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from timm.models.layers import trunc_normal_, DropPath
 
-from mmcv_custom import load_checkpoint
-from mmseg.utils import get_root_logger
-from mmseg.models.builder import BACKBONES
-
-
 class Block(nn.Module):
     r""" ConvNeXt Block. There are two equivalent implementations:
     (1) DwConv -> LayerNorm (channels_first) -> 1x1 Conv -> GELU -> 1x1 Conv; all in (N, C, H, W)
@@ -55,7 +50,6 @@ class Block(nn.Module):
         x = input + self.drop_path(x)
         return x
 
-@BACKBONES.register_module()
 class ConvNeXt(nn.Module):
     r""" ConvNeXt
         A PyTorch impl of : `A ConvNet for the 2020s`  -
@@ -132,8 +126,6 @@ class ConvNeXt(nn.Module):
 
         if isinstance(pretrained, str):
             self.apply(_init_weights)
-            logger = get_root_logger()
-            load_checkpoint(self, pretrained, strict=False, logger=logger)
         elif pretrained is None:
             self.apply(_init_weights)
         else:

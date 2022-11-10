@@ -11,7 +11,6 @@ from torch import nn
 from src.models.model import ESANet
 from src.models.model_one_modality import ESANetOneModality
 from src.models.resnet import ResNet
-from src.models.convnext_rgbd import ConvNeXtRGBD
 
 
 def build_model(args, n_classes):
@@ -46,7 +45,7 @@ def build_model(args, n_classes):
         if args.encoder_depth in [None, 'None']:
             args.encoder_depth = args.encoder
 
-        model = ConvNeXtRGBD(
+        model = ESANet(
             height=args.height,
             width=args.width,
             num_classes=n_classes,

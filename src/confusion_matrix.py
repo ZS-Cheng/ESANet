@@ -13,6 +13,7 @@ import tensorflow as tf
 from ignite.exceptions import NotComputableError
 from ignite.metrics import Metric, MetricsLambda
 
+tf.compat.v1.disable_eager_execution()
 
 class ConfusionMatrixTensorflow:
     def __init__(self, n_classes):

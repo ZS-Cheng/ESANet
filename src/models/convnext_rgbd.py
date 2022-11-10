@@ -16,11 +16,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 from timm.models.layers import trunc_normal_, DropPath
 
-from convnext import ConvNeXt
-from rgb_depth_fusion import SqueezeAndExciteFusionAdd
-from context_modules import get_context_module
-from resnet import BasicBlock, NonBottleneck1D
-from model_utils import ConvBNAct, Swish, Hswish
+from src.models.convnext import ConvNeXt
+from src.models.rgb_depth_fusion import SqueezeAndExciteFusionAdd
+from src.models.context_modules import get_context_module
+from src.models.resnet import BasicBlock, NonBottleneck1D
+from src.models.model_utils import ConvBNAct, Swish, Hswish
 
 class ConvNeXtRGBD(nn.Module):
     def __init__(self,
@@ -166,7 +166,7 @@ class ConvNeXtRGBD(nn.Module):
             self.depthEncoder.apply(_init_weights)
             # 写mmcv初始化权重的方法
             # 权重地址 https://dl.fbaipublicfiles.com/convnext/convnext_tiny_1k_224.pth
-            pretrain_dict = torch.load('/content/unilm/beit/convnext_tiny_1k_224.pth')
+            pretrain_dict = torch.load('/content/ESANet/convnext_tiny_1k_224.pth')
             rgbEncoder_dict = self.rgbEncoder.state_dict()
             depthEncoder_dict = self.depthEncoder.state_dict()
             # 过滤pretrain中是在model中没有的键值
@@ -185,6 +185,12 @@ class ConvNeXtRGBD(nn.Module):
             raise TypeError('pretrained must be a str or None')
 
     def forward_features(self, rgb, depth):
+        print("rgb shape", rgb.shape)
+        print("depth shape", depth.shape)
+        if (len(depth.shape) == 5):
+            depth = torch.squeeze(depth)
+            depth = depth.transpose(1,3).transpose(2,3)
+        print("depth shape", depth.shape)
         outs = []
         for i in range(4):
             rgb = self.rgbEncoder.downsample_layers[i](rgb)
