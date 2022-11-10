@@ -48,9 +48,6 @@ class ConvNeXtRGBD(nn.Module):
         layer_scale_init_value = 1e-6
         out_indices = [0, 1, 2, 3]
 
-
-        self.se_layers = [] # se fusion module
-
         self.out_indices = out_indices
 
         # set activation function
@@ -72,8 +69,10 @@ class ConvNeXtRGBD(nn.Module):
 
         self.dims = dims
 
+        se_layers = []
         for i in range(4):
-            self.se_layers.append(SqueezeAndExciteFusionAdd(dims[i], activation=self.activation))
+            se_layers.append(SqueezeAndExciteFusionAdd(dims[i], activation=self.activation))
+        self.se_layers = nn.Sequential(*se_layers)
 
         self.rgbEncoder = ConvNeXt(in_chans, depths, dims, drop_path_rate, layer_scale_init_value, out_indices)
         self.depthEncoder = ConvNeXt(in_chans, depths, dims, drop_path_rate, layer_scale_init_value, out_indices)
@@ -185,12 +184,9 @@ class ConvNeXtRGBD(nn.Module):
             raise TypeError('pretrained must be a str or None')
 
     def forward_features(self, rgb, depth):
-        print("rgb shape", rgb.shape)
-        print("depth shape", depth.shape)
         if (len(depth.shape) == 5):
             depth = torch.squeeze(depth)
             depth = depth.transpose(1,3).transpose(2,3)
-        print("depth shape", depth.shape)
         outs = []
         for i in range(4):
             rgb = self.rgbEncoder.downsample_layers[i](rgb)
