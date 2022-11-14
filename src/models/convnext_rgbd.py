@@ -144,7 +144,7 @@ class ConvNeXtRGBD(nn.Module):
         self.pretrained = None
         if pretrained_on_imagenet:
             self.pretrained = pretrained_dir # 权重文件路径
-            self.init_weights(self.pretrained)
+            # self.init_weights(self.pretrained)
 
     def init_weights(self, pretrained=None):
         """Initialize the weights in backbone.
