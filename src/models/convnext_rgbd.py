@@ -43,7 +43,8 @@ class ConvNeXtRGBD(nn.Module):
 
         in_chans = 3
         depths = [3, 3, 9, 3]
-        dims = [96, 192, 384, 768]
+        # dims = [96, 192, 384, 768]
+        dims = [48, 96, 192, 384]
         drop_path_rate = 0.
         layer_scale_init_value = 1e-6
         out_indices = [0, 1, 2, 3]
